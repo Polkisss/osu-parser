@@ -81,5 +81,5 @@ type Beatmap struct {
 	// Hit Objects
 	//
 	// A list of the beatmap's hit objects.
-	HitObjects []HitObjectProvider
+	HitObjects []interface{}
 }

@@ -18,14 +18,6 @@ const (
 	MANIA_HOLD_NOTE
 )
 
-type HitObjectProvider struct {
-	hitObject interface{}
-}
-
-func (p HitObjectProvider) GetHitObject() interface{} {
-	return p.hitObject
-}
-
 type BaseHitObject struct {
 	X, Y     int
 	Time     int
