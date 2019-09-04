@@ -6,15 +6,14 @@ import (
 	"strings"
 )
 
+// Timing points describe a number of properties regarding beats per minute and hit sounds.
+//
+// Example of a TimingPoint:
+//  66,315.789473684211,4,2,0,45,1,0
+//
+// Example of an inherited TimingPoint:
+//  10171,-100,4,2,0,60,0,1
 type TimingPoint struct {
-	// Timing points describe a number of properties regarding beats per minute and hit sounds.
-	//
-	// Example of a TimingPoint:
-	//  66,315.789473684211,4,2,0,45,1,0
-	//
-	// Example of an inherited TimingPoint:
-	//  10171,-100,4,2,0,60,0,1
-
 	Offset int // Define when the timing point starts
 
 	// Defines the duration of one beat. It affect the scrolling speed in osu!taiko or
