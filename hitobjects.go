@@ -192,7 +192,6 @@ func (s *Slider) FromString(str string) (err error) {
 		}
 		s.EdgeHitSounds[i] = HitSound(hs)
 	}
-	edgeHitSounds = nil
 
 	edgeAdditions := strings.Split(attrs[9], "|")
 	s.EdgeAdditions = make([]*SliderEdgeAddition, len(edgeAdditions))
@@ -203,7 +202,6 @@ func (s *Slider) FromString(str string) (err error) {
 			return err
 		}
 	}
-	edgeAdditions = nil
 
 	s.Extras = new(Extras)
 	return s.Extras.FromString(attrs[10])
