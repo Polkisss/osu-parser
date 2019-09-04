@@ -24,7 +24,7 @@ func (b Break) String() string {
 		}, ",")
 }
 
-// Fills Break fields with data parsed from string.
+// FromString fills Break fields with data parsed from string.
 func (b *Break) FromString(str string) (err error) {
 	str = strings.TrimPrefix(str, "2,")
 
@@ -39,6 +39,7 @@ func (b *Break) FromString(str string) (err error) {
 	return err
 }
 
+// RGB provides color manipulation.
 type RGB struct {
 	R, G, B int
 }
@@ -51,7 +52,7 @@ func (c RGB) String() string {
 	}, ",")
 }
 
-// Fills RGB triplet with data parsed from string.
+// FromString fills RGB triplet with data parsed from string.
 func (c *RGB) FromString(str string) (err error) {
 	attrs := strings.Split(str, ",")
 
@@ -88,7 +89,7 @@ func (e Extras) String() string {
 	}, ":")
 }
 
-// Fills Extras fields with data parsed from string.
+// FromString fills Extras fields with data parsed from string.
 func (e *Extras) FromString(str string) (err error) {
 	attrs := strings.Split(str, ":")
 

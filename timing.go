@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Timing points describe a number of properties regarding beats per minute and hit sounds.
+// TimingPoints describe a number of properties regarding beats per minute and hit sounds.
 //
 // Example of a TimingPoint:
 //  66,315.789473684211,4,2,0,45,1,0

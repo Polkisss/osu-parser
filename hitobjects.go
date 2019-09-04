@@ -18,6 +18,7 @@ const (
 	MANIA_HOLD_NOTE
 )
 
+// BaseHitObject provides common information that is used in all hit objects.
 type BaseHitObject struct {
 	X, Y     int
 	Time     int
@@ -207,9 +208,8 @@ func (s *Slider) FromString(str string) (err error) {
 	return s.Extras.FromString(attrs[10])
 }
 
-// List of samples sets to apply to the circles of the slider.
-// The list contains exactly repeat + 1 elements. SampleSet and AdditionSet
-// are the same as for hit circles' extras fields.
+// SliderEdgeAddition is a sample sets to apply to the circles of the slider.
+// SampleSet and AdditionSet are the same as for hit circles' extras fields.
 type SliderEdgeAddition struct {
 	SampleSet   SampleSet
 	AdditionSet SampleSet
@@ -238,7 +238,7 @@ func (sea *SliderEdgeAddition) FromString(str string) (err error) {
 	return nil
 }
 
-// Specifies path of the slider.
+// SliderPath specifies path of the slider.
 type SliderPath struct {
 	SliderType  string
 	CurvePoints []*SliderCurvePoint
@@ -252,7 +252,7 @@ func (sp SliderPath) String() string {
 	return sp.SliderType + "|" + strings.Join(points, "|")
 }
 
-// FromString fills S fields SliderPath with data parsed from string.
+// FromString fills SliderPath fields SliderPath with data parsed from string.
 func (sp *SliderPath) FromString(str string) (err error) {
 	attrs := strings.Split(str, "|")
 	sp.SliderType = attrs[0]
@@ -268,6 +268,7 @@ func (sp *SliderPath) FromString(str string) (err error) {
 	return nil
 }
 
+// SliderCurvePoint describe a single point of the slider.
 type SliderCurvePoint struct {
 	X, Y int
 }
@@ -288,7 +289,7 @@ func (cp *SliderCurvePoint) FromString(str string) (err error) {
 	return err
 }
 
-// A spinner also creates bananas in Catch the Beat, a spinner in osu!taiko,
+// Spinner also creates bananas in Catch the Beat, a spinner in osu!taiko,
 // and does not appear in osu!mania. Hit sounds play at the end of the spinner.
 type Spinner struct {
 	BaseHitObject
@@ -360,7 +361,7 @@ func (s *Spinner) FromString(str string) (err error) {
 	return nil
 }
 
-// A hold note unique to osu!mania.
+// ManiaHoldNote is a hold note unique to osu!mania.
 type ManiaHoldNote struct {
 	BaseHitObject
 	EndTime int
