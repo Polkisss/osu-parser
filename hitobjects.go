@@ -1,0 +1,422 @@
+package osu_parser
+
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
+
+const (
+	CIRCLE = 1 << iota
+	SLIDER
+	NEW_COMBO
+	SPINNER
+	COMBO_SKIP_1
+	COMBO_SKIP_2
+	COMBO_SKIP_3
+	MANIA_HOLD_NOTE
+)
+
+type HitObjectProvider struct {
+	hitObject interface{}
+}
+
+func (p HitObjectProvider) GetHitObject() interface{} {
+	return p.hitObject
+}
+
+type BaseHitObject struct {
+	X, Y     int
+	Time     int
+	Type     int
+	HitSound HitSound
+	Extras   *Extras
+}
+
+// A hit circle is a single hit in all osu! game modes.
+type Circle struct {
+	BaseHitObject
+}
+
+func (c Circle) String() string {
+	return strings.Join([]string{
+		strconv.Itoa(c.X),
+		strconv.Itoa(c.Y),
+		strconv.Itoa(c.Time),
+		strconv.Itoa(c.Type),
+		strconv.Itoa(int(c.HitSound)),
+		c.Extras.String(),
+	}, ",")
+}
+
+func (c *Circle) FromString(str string) (err error) {
+	attrs := strings.Split(str, ",")
+
+	c.X, err = strconv.Atoi(attrs[0])
+	if err != nil {
+		return err
+	}
+
+	c.Y, err = strconv.Atoi(attrs[1])
+	if err != nil {
+		return err
+	}
+
+	c.Time, err = strconv.Atoi(attrs[2])
+	if err != nil {
+		return err
+	}
+
+	c.Type, err = strconv.Atoi(attrs[3])
+	if err != nil {
+		return err
+	}
+
+	hs, err := strconv.Atoi(attrs[4])
+	if err != nil {
+		return err
+	}
+	c.HitSound = HitSound(hs)
+
+	c.Extras = new(Extras)
+	return c.Extras.FromString(attrs[5])
+}
+
+// A slider also creates droplets in Catch the Beat, yellow drumrolls in Taiko,
+// and does not appear in osu!mania.
+type Slider struct {
+	BaseHitObject
+
+	// Specifies path of the slider.
+	SliderPath *SliderPath
+
+	// The number of times a player will go over the slider.
+	// A value of 1 will not repeat, 2 will repeat once, 3 twice, and so on.
+	Repeat int
+
+	// The length of the slider along the path of the described curve.
+	// It is specified in osu!pixels, i.e. relative to the 512×384 virtual screen.
+	PixelLength float64
+
+	// Applies only to the body of the slider. Only normal (0) and
+	// whistle (2) are supported. The samples played are named
+	// like soft-sliderslide4.wav for normal, and normal-sliderwhistle.wav for whistle.
+	// These samples are meant to be looped, and may also be empty WAV files to mute
+	// the slider.
+	HitSound HitSound
+
+	// List of HitSounds to apply to the circles of the slider.
+	// The values are the same as those for regular hit objects.
+	// The list must contain exactly repeat + 1 values, where the first value
+	// is the hit sound to play when the slider is first clicked, and the last one
+	// when the slider is released.
+	EdgeHitSounds []HitSound
+
+	// List of samples sets to apply to the circles of the slider.
+	// The list contains exactly repeat + 1 elements. SampleSet and AdditionSet
+	// are the same as for hit circles' extras fields.
+	EdgeAdditions []*SliderEdgeAddition
+}
+
+func (s Slider) String() string {
+	hitSounds := make([]string, len(s.EdgeHitSounds))
+	for i := range hitSounds {
+		hitSounds[i] = strconv.Itoa(int(s.EdgeHitSounds[i]))
+	}
+
+	additions := make([]string, len(s.EdgeAdditions))
+	for i := range additions {
+		additions[i] = strconv.Itoa(int(s.EdgeAdditions[i].SampleSet)) + ":" + strconv.Itoa(int(s.EdgeAdditions[i].AdditionSet))
+	}
+	return strings.Join([]string{
+		strconv.Itoa(s.X),
+		strconv.Itoa(s.Y),
+		strconv.Itoa(s.Time),
+		strconv.Itoa(s.Type),
+		strconv.Itoa(int(s.HitSound)),
+		s.SliderPath.String(),
+		strconv.Itoa(s.Repeat),
+		fmt.Sprintf("%g", s.PixelLength),
+		strings.Join(hitSounds, "|"),
+		strings.Join(additions, "|"),
+		s.Extras.String(),
+	}, ",")
+}
+
+func (s *Slider) FromString(str string) (err error) {
+	attrs := strings.Split(str, ",")
+
+	s.X, err = strconv.Atoi(attrs[0])
+	if err != nil {
+		return err
+	}
+
+	s.Y, err = strconv.Atoi(attrs[1])
+	if err != nil {
+		return err
+	}
+
+	s.Time, err = strconv.Atoi(attrs[2])
+	if err != nil {
+		return err
+	}
+
+	s.Type, err = strconv.Atoi(attrs[3])
+	if err != nil {
+		return err
+	}
+
+	hs, err := strconv.Atoi(attrs[4])
+	if err != nil {
+		return err
+	}
+	s.HitSound = HitSound(hs)
+
+	s.SliderPath = new(SliderPath)
+	err = s.SliderPath.FromString(attrs[5])
+	if err != nil {
+		return err
+	}
+
+	s.Repeat, err = strconv.Atoi(attrs[6])
+	if err != nil {
+		return err
+	}
+
+	s.PixelLength, err = strconv.ParseFloat(attrs[7], 64)
+	if err != nil {
+		return err
+	}
+
+	edgeHitSounds := strings.Split(attrs[8], "|")
+	s.EdgeHitSounds = make([]HitSound, len(edgeHitSounds))
+	for i := 0; i < len(edgeHitSounds); i++ {
+		hs, err = strconv.Atoi(edgeHitSounds[i])
+		if err != nil {
+			return err
+		}
+		s.EdgeHitSounds[i] = HitSound(hs)
+	}
+	edgeHitSounds = nil
+
+	edgeAdditions := strings.Split(attrs[9], "|")
+	s.EdgeAdditions = make([]*SliderEdgeAddition, len(edgeAdditions))
+	for i := 0; i < len(edgeAdditions); i++ {
+		s.EdgeAdditions[i] = new(SliderEdgeAddition)
+		err = s.EdgeAdditions[i].FromString(edgeAdditions[i])
+		if err != nil {
+			return err
+		}
+	}
+	edgeAdditions = nil
+
+	s.Extras = new(Extras)
+	return s.Extras.FromString(attrs[10])
+}
+
+// List of samples sets to apply to the circles of the slider.
+// The list contains exactly repeat + 1 elements. SampleSet and AdditionSet
+// are the same as for hit circles' extras fields.
+type SliderEdgeAddition struct {
+	SampleSet   SampleSet
+	AdditionSet SampleSet
+}
+
+func (sea SliderEdgeAddition) String() string {
+	return strconv.Itoa(int(sea.SampleSet)) + ":" + strconv.Itoa(int(sea.AdditionSet))
+}
+
+func (sea *SliderEdgeAddition) FromString(str string) (err error) {
+	sep := strings.Index(str, ":")
+
+	ss, err := strconv.Atoi(str[:sep])
+	if err != nil {
+		return err
+	}
+	sea.SampleSet = SampleSet(ss)
+
+	ss, err = strconv.Atoi(str[:sep])
+	if err != nil {
+		return err
+	}
+	sea.AdditionSet = SampleSet(ss)
+
+	return nil
+}
+
+// Specifies path of the slider.
+type SliderPath struct {
+	SliderType  string
+	CurvePoints []*SliderCurvePoint
+}
+
+func (sp SliderPath) String() string {
+	points := make([]string, len(sp.CurvePoints))
+	for i := range points {
+		points[i] = sp.CurvePoints[i].String()
+	}
+	return sp.SliderType + "|" + strings.Join(points, "|")
+}
+
+func (sp *SliderPath) FromString(str string) (err error) {
+	attrs := strings.Split(str, "|")
+	sp.SliderType = attrs[0]
+	sp.CurvePoints = make([]*SliderCurvePoint, len(attrs)-1)
+	for i := 1; i < len(attrs); i++ {
+		point := new(SliderCurvePoint)
+		err = point.FromString(attrs[i])
+		if err != nil {
+			return err
+		}
+		sp.CurvePoints[i-1] = point
+	}
+	return nil
+}
+
+type SliderCurvePoint struct {
+	X, Y int
+}
+
+func (cp SliderCurvePoint) String() string {
+	return strconv.Itoa(cp.X) + ":" + strconv.Itoa(cp.Y)
+}
+
+func (cp *SliderCurvePoint) FromString(str string) (err error) {
+	sep := strings.Index(str, ":")
+	cp.X, err = strconv.Atoi(str[:sep])
+	if err != nil {
+		return err
+	}
+
+	cp.Y, err = strconv.Atoi(str[sep+1:])
+	return err
+}
+
+// A spinner also creates bananas in Catch the Beat, a spinner in osu!taiko,
+// and does not appear in osu!mania. Hit sounds play at the end of the spinner.
+type Spinner struct {
+	BaseHitObject
+	EndTime int // When the spinner will end, in milliseconds from the beginning of the song
+}
+
+func (s Spinner) String() string {
+	if s.Extras == nil {
+		return strings.Join([]string{
+			strconv.Itoa(s.X),
+			strconv.Itoa(s.Y),
+			strconv.Itoa(s.Time),
+			strconv.Itoa(s.Type),
+			strconv.Itoa(int(s.HitSound)),
+			strconv.Itoa(s.EndTime),
+		}, ",")
+	}
+	return strings.Join([]string{
+		strconv.Itoa(s.X),
+		strconv.Itoa(s.Y),
+		strconv.Itoa(s.Time),
+		strconv.Itoa(s.Type),
+		strconv.Itoa(int(s.HitSound)),
+		strconv.Itoa(s.EndTime),
+		s.Extras.String(),
+	}, ",")
+}
+
+func (s *Spinner) FromString(str string) (err error) {
+	attrs := strings.Split(str, ",")
+
+	s.X, err = strconv.Atoi(attrs[0])
+	if err != nil {
+		return err
+	}
+
+	s.Y, err = strconv.Atoi(attrs[1])
+	if err != nil {
+		return err
+	}
+
+	s.Time, err = strconv.Atoi(attrs[2])
+	if err != nil {
+		return err
+	}
+
+	s.Type, err = strconv.Atoi(attrs[3])
+	if err != nil {
+		return err
+	}
+
+	hs, err := strconv.Atoi(attrs[4])
+	if err != nil {
+		return err
+	}
+	s.HitSound = HitSound(hs)
+
+	s.EndTime, err = strconv.Atoi(attrs[5])
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(attrs, len(attrs))
+	if len(attrs) > 6 {
+		s.Extras = new(Extras)
+		return s.Extras.FromString(attrs[6])
+	}
+	return nil
+}
+
+// A hold note unique to osu!mania.
+type ManiaHoldNote struct {
+	BaseHitObject
+	EndTime int
+}
+
+func (hn ManiaHoldNote) String() string {
+	return strings.Join([]string{
+		strconv.Itoa(hn.X),
+		strconv.Itoa(hn.Y),
+		strconv.Itoa(hn.Time),
+		strconv.Itoa(hn.Type),
+		strconv.Itoa(int(hn.HitSound)),
+		strconv.Itoa(hn.EndTime),
+	}, ",") + ":" + hn.Extras.String()
+}
+
+func (hn *ManiaHoldNote) FromString(str string) (err error) {
+	attrs := strings.Split(str, ",")
+
+	hn.X, err = strconv.Atoi(attrs[0])
+	if err != nil {
+		return err
+	}
+
+	hn.Y, err = strconv.Atoi(attrs[1])
+	if err != nil {
+		return err
+	}
+
+	hn.Time, err = strconv.Atoi(attrs[2])
+	if err != nil {
+		return err
+	}
+
+	hn.Type, err = strconv.Atoi(attrs[3])
+	if err != nil {
+		return err
+	}
+
+	hs, err := strconv.Atoi(attrs[4])
+	if err != nil {
+		return err
+	}
+	hn.HitSound = HitSound(hs)
+
+	// last parameter is joined in mania so we need to split
+	sep := strings.Index(attrs[5], ":")
+
+	hn.EndTime, err = strconv.Atoi(attrs[5][:sep])
+	if err != nil {
+		return err
+	}
+
+	hn.Extras = new(Extras)
+	return hn.Extras.FromString(attrs[5][sep+1:])
+}
