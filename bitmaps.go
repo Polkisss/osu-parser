@@ -7,7 +7,7 @@ import (
 // Countdown specifies the speed of the countdown which occurs before the first hit object appears.
 type Countdown int
 
-// countdown speed
+// Countdown speed and length.
 const (
 	NO_COUNTDOWN Countdown = iota
 	NORMAL_COUNTDOWN
@@ -18,7 +18,7 @@ const (
 // SampleSet specifies which set of hit sounds will be used.
 type SampleSet int
 
-// possible sample sets
+// All possible sample sets
 const (
 	AUTO_SAMPLESET SampleSet = iota
 	NORMAL_SAMPLESET
@@ -26,7 +26,7 @@ const (
 	DRUM_SAMPLESET
 )
 
-// Set the sample set from string.
+// FromString allows you to set sample sets with strings.
 func (ss *SampleSet) FromString(sample string) error {
 	switch sample {
 	case "Auto":
@@ -55,7 +55,7 @@ func (ss SampleSet) String() string {
 // GameMode defines the game mode of the beatmap.
 type GameMode int
 
-// possible gamemodes
+// All possible gamemodes
 const (
 	OSU_GAMEMODE GameMode = iota
 	TAIKO_GAMEMODE
@@ -66,9 +66,10 @@ const (
 // HitSound specifies a hit sounds to play when the hit object is successfully hit.
 type HitSound int
 
-// possible hitsounds (also zero)
+// All possible hit sounds
 const (
-	NORMAL_HITSOUND HitSound = 1 << iota
+	NO_HITSOUND     HitSound = 0
+	NORMAL_HITSOUND          = 1 << iota
 	WHISTLE_HITSOUND
 	FINISH_HITSOUND
 	CLAP_HITSOUND
