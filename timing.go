@@ -54,7 +54,7 @@ func (tp TimingPoint) String() string {
 	}, ",")
 }
 
-// Fills TimingPoint fields with data parsed from string.
+// FromString fills TimingPoint fields with data parsed from string.
 func (tp *TimingPoint) FromString(str string) (err error) {
 	attrs := strings.Split(str, ",")
 

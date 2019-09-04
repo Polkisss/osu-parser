@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// types for objects
 const (
 	CIRCLE = 1 << iota
 	SLIDER
@@ -33,7 +34,7 @@ type BaseHitObject struct {
 	Extras   *Extras
 }
 
-// A hit circle is a single hit in all osu! game modes.
+// Circle is a single hit in all osu! game modes.
 type Circle struct {
 	BaseHitObject
 }
@@ -49,6 +50,7 @@ func (c Circle) String() string {
 	}, ",")
 }
 
+// FromString fills Circle fields with data parsed from string.
 func (c *Circle) FromString(str string) (err error) {
 	attrs := strings.Split(str, ",")
 
@@ -82,7 +84,7 @@ func (c *Circle) FromString(str string) (err error) {
 	return c.Extras.FromString(attrs[5])
 }
 
-// A slider also creates droplets in Catch the Beat, yellow drumrolls in Taiko,
+// Slider also creates droplets in Catch the Beat, yellow drumrolls in Taiko,
 // and does not appear in osu!mania.
 type Slider struct {
 	BaseHitObject
@@ -143,6 +145,7 @@ func (s Slider) String() string {
 	}, ",")
 }
 
+// FromString fills Slider fields with data parsed from string.
 func (s *Slider) FromString(str string) (err error) {
 	attrs := strings.Split(str, ",")
 
@@ -226,6 +229,7 @@ func (sea SliderEdgeAddition) String() string {
 	return strconv.Itoa(int(sea.SampleSet)) + ":" + strconv.Itoa(int(sea.AdditionSet))
 }
 
+// FromString fills SliderEdgeAddition fields with data parsed from string.
 func (sea *SliderEdgeAddition) FromString(str string) (err error) {
 	sep := strings.Index(str, ":")
 
@@ -258,6 +262,7 @@ func (sp SliderPath) String() string {
 	return sp.SliderType + "|" + strings.Join(points, "|")
 }
 
+// FromString fills S fields SliderPath with data parsed from string.
 func (sp *SliderPath) FromString(str string) (err error) {
 	attrs := strings.Split(str, "|")
 	sp.SliderType = attrs[0]
@@ -281,6 +286,7 @@ func (cp SliderCurvePoint) String() string {
 	return strconv.Itoa(cp.X) + ":" + strconv.Itoa(cp.Y)
 }
 
+// FromString fills SliderCurvePoint fields with data parsed from string.
 func (cp *SliderCurvePoint) FromString(str string) (err error) {
 	sep := strings.Index(str, ":")
 	cp.X, err = strconv.Atoi(str[:sep])
@@ -321,6 +327,7 @@ func (s Spinner) String() string {
 	}, ",")
 }
 
+// FromString fills Spinner fields with data parsed from string.
 func (s *Spinner) FromString(str string) (err error) {
 	attrs := strings.Split(str, ",")
 
@@ -380,6 +387,7 @@ func (hn ManiaHoldNote) String() string {
 	}, ",") + ":" + hn.Extras.String()
 }
 
+// FromString fills ManiaHoldNote fields with data parsed from string.
 func (hn *ManiaHoldNote) FromString(str string) (err error) {
 	attrs := strings.Split(str, ",")
 

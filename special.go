@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Defines a single break period.
+// Break defines a single break period.
 //
 // Example of an break period:
 //  2,4627,5743
@@ -69,7 +69,7 @@ func (c *RGB) FromString(str string) (err error) {
 	return err
 }
 
-// Optional and define additional parameters related to the hit sound samples.
+// Extras define additional parameters related to the hit sound samples.
 type Extras struct {
 	SampleSet     SampleSet // Changes the sample set of the normal hit sound. When sampleSet is 0, its value should be inherited from the timing point.
 	AdditionalSet SampleSet // Changes the sample set for the other hit sounds
