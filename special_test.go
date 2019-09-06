@@ -1,6 +1,8 @@
 package pcircle
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestBreak_String(t *testing.T) {
 	type fields struct {
@@ -226,6 +228,91 @@ func TestExtras_FromString(t *testing.T) {
 			}
 			if err := e.FromString(tt.args.str); (err != nil) != tt.wantErr {
 				t.Errorf("Extras.FromString() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestBackground_String(t *testing.T) {
+	type fields struct {
+		FileName string
+		XOffset  int
+		YOffset  int
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			name: "Background String",
+			fields: fields{
+				FileName: "bg.jpg",
+				XOffset:  50,
+				YOffset:  100,
+			},
+			want: `0,0,"bg.jpg",50,100`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := Background{
+				FileName: tt.fields.FileName,
+				XOffset:  tt.fields.XOffset,
+				YOffset:  tt.fields.YOffset,
+			}
+			if got := b.String(); got != tt.want {
+				t.Errorf("Background.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBackground_FromString(t *testing.T) {
+	type fields struct {
+		FileName string
+		XOffset  int
+		YOffset  int
+	}
+	type args struct {
+		str string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "Background FromString with double quotes",
+			fields: fields{
+				FileName: "bg.jpg",
+				XOffset:  50,
+				YOffset:  100,
+			},
+			args:    args{str: `0,0,"bg.jpg",50,100`},
+			wantErr: false,
+		},
+		{
+			name: "Background FromString without double quotes",
+			fields: fields{
+				FileName: "bg.jpg",
+				XOffset:  50,
+				YOffset:  100,
+			},
+			args:    args{str: `0,0,bg.jpg,50,100`},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := &Background{
+				FileName: tt.fields.FileName,
+				XOffset:  tt.fields.XOffset,
+				YOffset:  tt.fields.YOffset,
+			}
+			if err := b.FromString(tt.args.str); (err != nil) != tt.wantErr {
+				t.Errorf("Background.FromString() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
