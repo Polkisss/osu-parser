@@ -121,6 +121,9 @@ func (b *Beatmap) FromFile(path string) error {
 
 		if b.FileFormatVersion != 0 && strings.HasPrefix(line, "osu file format v") {
 			b.FileFormatVersion, err = strconv.Atoi(line)
+			if err != nil {
+				return err
+			}
 			continue
 		}
 
@@ -143,8 +146,14 @@ func (b *Beatmap) FromFile(path string) error {
 				}
 			case "PreviewTime":
 				b.PreviewTime, err = strconv.Atoi(data)
+				if err != nil {
+					return err
+				}
 			case "Countdown":
 				b.Countdown, err = strconv.Atoi(data)
+				if err != nil {
+					return err
+				}
 			case "SampleSet":
 				err = b.SampleSet.FromString(data)
 				if err != nil {
@@ -349,14 +358,23 @@ func (b *Beatmap) FromFile(path string) error {
 			case "SliderBody":
 				colour := &RGB{}
 				err = colour.FromString(data)
+				if err != nil {
+					return err
+				}
 				b.SliderBody = colour
 			case "SliderTrackOverride":
 				colour := &RGB{}
 				err = colour.FromString(data)
+				if err != nil {
+					return err
+				}
 				b.SliderTrackOverride = colour
 			case "SliderBorder":
 				colour := &RGB{}
 				err = colour.FromString(data)
+				if err != nil {
+					return err
+				}
 				b.SliderBorder = colour
 			}
 
