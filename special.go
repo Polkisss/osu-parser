@@ -77,8 +77,8 @@ func (c *RGB) FromString(str string) (err error) {
 // The most common example:
 //  0:0:0:0:
 type Extras struct {
-	SampleSet     SampleSet // Changes the sample set of the normal hit sound. When sampleSet is 0, its value should be inherited from the timing point.
-	AdditionalSet SampleSet // Changes the sample set for the other hit sounds
+	SampleSet     SampleSet // The sample set of the normal hit sound. When sampleSet is 0, its value should be inherited from the timing point.
+	AdditionalSet SampleSet // The sample set for the other hit sounds
 	CustomIndex   int       // Custom sample set index
 	SampleVolume  int       // Volume of the sample, and ranges from 0 to 100 (percent)
 	Filename      string    // Names an audio file in the folder to play instead of sounds from sample sets

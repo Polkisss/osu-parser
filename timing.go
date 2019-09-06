@@ -20,19 +20,21 @@ type TimingPoint struct {
 	// osu!mania, and the slider speed in osu!standard.
 	MillisecondsPerBeat float64
 
-	Meter       int       // Defines the number of beats in a measure
-	SampleSet   SampleSet // Defines the default sample set for hit objects
+	Meter       int       // The number of beats in a measure
+	SampleSet   SampleSet // The default sample set for hit objects
 	SampleIndex int       // The default custom index
 	Volume      int       // The default hitsound volume, ranges from 0 to 100 (percent)
 
 	// Tells if the timing point can be inherited from.
-	// A positive milliseconds per beat implies inherited is true (1), and a negative one implies it is false (0).
-	// Note that false (0) means green line, true (1) means red line.
+	// A positive milliseconds per beat implies inherited is true (1), and a negative
+	// one implies it is false (0). Note that false (0) means green line, true (1) means
+	// red line.
 	Inherited bool
 
 	Kiai bool // Defines whether or not Kiai Time effects are active
 }
 
+// String returns string of TimingPoint as it would be in .osu file
 func (tp TimingPoint) String() string {
 	var mpb string
 

@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Bitmap for BaseHitObject.Type
+// Bitmap for BaseHitObject.Type.
 const (
 	CIRCLE = 1 << iota
 	SLIDER
@@ -34,7 +34,7 @@ type Circle struct {
 	BaseHitObject
 }
 
-// String returns string of Circle as it would be in .osu file
+// String returns string of Circle as it would be in .osu file.
 func (c Circle) String() string {
 	return strings.Join([]string{
 		strconv.Itoa(c.X),
@@ -118,7 +118,7 @@ type Slider struct {
 	EdgeAdditions []*SliderEdgeAddition
 }
 
-// String returns string of Slider as it would be in .osu file
+// String returns string of Slider as it would be in .osu file.
 func (s Slider) String() string {
 	hitSounds := make([]string, len(s.EdgeHitSounds))
 	for i := range hitSounds {
@@ -221,7 +221,7 @@ type SliderEdgeAddition struct {
 	AdditionSet SampleSet
 }
 
-// String returns string of SliderEdgeAddition as it would be in .osu file
+// String returns string of SliderEdgeAddition as it would be in .osu file.
 func (sea SliderEdgeAddition) String() string {
 	return strconv.Itoa(int(sea.SampleSet)) + ":" + strconv.Itoa(int(sea.AdditionSet))
 }
@@ -251,7 +251,7 @@ type SliderPath struct {
 	CurvePoints []*SliderCurvePoint
 }
 
-// String returns string of SliderPath as it would be in .osu file
+// String returns string of SliderPath as it would be in .osu file.
 func (sp SliderPath) String() string {
 	points := make([]string, len(sp.CurvePoints))
 	for i := range points {
@@ -281,7 +281,7 @@ type SliderCurvePoint struct {
 	X, Y int
 }
 
-// String returns string of SliderCurvePoint as it would be in .osu file
+// String returns string of SliderCurvePoint as it would be in .osu file.
 func (cp SliderCurvePoint) String() string {
 	return strconv.Itoa(cp.X) + ":" + strconv.Itoa(cp.Y)
 }
@@ -307,7 +307,7 @@ type Spinner struct {
 	EndTime int // When the spinner will end, in milliseconds from the beginning of the song
 }
 
-// String returns string of Spinner as it would be in .osu file
+// String returns string of Spinner as it would be in .osu file.
 func (s Spinner) String() string {
 	if s.Extras == nil {
 		return strings.Join([]string{
@@ -381,7 +381,7 @@ type ManiaHoldNote struct {
 	EndTime int
 }
 
-// String returns string of ManiaHoldNote as it would be in .osu file
+// String returns string of ManiaHoldNote as it would be in .osu file.
 func (hn ManiaHoldNote) String() string {
 	return strings.Join([]string{
 		strconv.Itoa(hn.X),

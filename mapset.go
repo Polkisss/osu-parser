@@ -16,7 +16,7 @@ func NewMapset(directory string) *Mapset {
 
 // Mapset stores information about beatmaps, its location and other.
 type Mapset struct {
-	DirectoryPath string // Specifies the location of mapset directory, where located beatmaps.
+	DirectoryPath string // The location of mapset directory, where located beatmaps.
 
 	Beatmaps     []*Beatmap // Unordered list of beatmaps
 	BeatmapSetID int        // The web ID of the beatmap set

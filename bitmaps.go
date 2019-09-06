@@ -4,7 +4,8 @@ import (
 	"errors"
 )
 
-// Countdown specifies the speed of the countdown which occurs before the first hit object appears.
+// Countdown specifies the speed of the countdown which occurs
+// before the first hit object appears.
 type Countdown int
 
 // Countdown speed and length.
