@@ -22,9 +22,9 @@ type Mapset struct {
 	BeatmapSetID int        // The web ID of the beatmap set
 }
 
-// Scans provided directory and loads .osu files into Mapset.
+// FromDirectory scans provided (from structure) directory and loads .osu files into Mapset.
 // Not implemented yet.
-func (m *Mapset) Load() (err error) {
+func (m *Mapset) FromDirectory() (err error) {
 	beatmaps, err := filepath.Glob(filepath.Join(m.DirectoryPath, "*.osu"))
 	if err != nil {
 		return err
