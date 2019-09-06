@@ -6,11 +6,10 @@ import (
 
 // Countdown specifies the speed of the countdown which occurs
 // before the first hit object appears.
-type Countdown int
 
 // Countdown speed and length.
 const (
-	NO_COUNTDOWN Countdown = iota
+	NO_COUNTDOWN = iota
 	NORMAL_COUNTDOWN
 	HALF_COUNTDOWN
 	DOUBLE_COUNTDOWN
@@ -19,7 +18,7 @@ const (
 // SampleSet specifies which set of hit sounds will be used.
 type SampleSet int
 
-// All possible sample sets
+// All possible sample sets.
 const (
 	AUTO_SAMPLESET SampleSet = iota
 	NORMAL_SAMPLESET
@@ -44,7 +43,7 @@ func (ss *SampleSet) FromString(sample string) error {
 	return nil
 }
 
-// String returns string of SampleSet in readable format
+// String returns string of SampleSet in readable format.
 func (ss SampleSet) String() string {
 	return map[SampleSet]string{
 		AUTO_SAMPLESET:   "Auto",
