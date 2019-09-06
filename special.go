@@ -1,4 +1,4 @@
-package osu_parser
+package pcircle
 
 import (
 	"strconv"
@@ -6,7 +6,6 @@ import (
 )
 
 // Break defines a single break period.
-//
 // Example of an break period:
 //  2,4627,5743
 type Break struct {
@@ -16,6 +15,7 @@ type Break struct {
 	EndTime   int
 }
 
+// String returns string of Break as it would be in .osu file
 func (b Break) String() string {
 	return "2," + strings.Join(
 		[]string{
@@ -40,10 +40,13 @@ func (b *Break) FromString(str string) (err error) {
 }
 
 // RGB provides color manipulation.
+// Example:
+//  128,128,0
 type RGB struct {
 	R, G, B int
 }
 
+// String returns string of RGB as it would be in .osu file
 func (c RGB) String() string {
 	return strings.Join([]string{
 		strconv.Itoa(c.R),
@@ -71,6 +74,8 @@ func (c *RGB) FromString(str string) (err error) {
 }
 
 // Extras define additional parameters related to the hit sound samples.
+// The most common example:
+//  0:0:0:0:
 type Extras struct {
 	SampleSet     SampleSet // Changes the sample set of the normal hit sound. When sampleSet is 0, its value should be inherited from the timing point.
 	AdditionalSet SampleSet // Changes the sample set for the other hit sounds
@@ -79,6 +84,7 @@ type Extras struct {
 	Filename      string    // Names an audio file in the folder to play instead of sounds from sample sets
 }
 
+// String returns string of Extras as it would be in .osu file
 func (e Extras) String() string {
 	return strings.Join([]string{
 		strconv.Itoa(int(e.SampleSet)),

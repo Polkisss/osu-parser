@@ -1,4 +1,4 @@
-package osu_parser
+package pcircle
 
 // Beatmap stores information about beatmap.
 type Beatmap struct {

@@ -1,4 +1,4 @@
-package osu_parser
+package pcircle
 
 func bool2int(b bool) (i int) {
 	if b {

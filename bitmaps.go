@@ -1,4 +1,4 @@
-package osu_parser
+package pcircle
 
 import (
 	"errors"
@@ -43,6 +43,7 @@ func (ss *SampleSet) FromString(sample string) error {
 	return nil
 }
 
+// String returns string of SampleSet in readable format
 func (ss SampleSet) String() string {
 	return map[SampleSet]string{
 		AUTO_SAMPLESET:   "Auto",
@@ -69,7 +70,7 @@ type HitSound int
 // All possible hit sounds
 const (
 	NO_HITSOUND     HitSound = 0
-	NORMAL_HITSOUND          = 1 << iota
+	NORMAL_HITSOUND HitSound = 1 << iota
 	WHISTLE_HITSOUND
 	FINISH_HITSOUND
 	CLAP_HITSOUND

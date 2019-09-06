@@ -1,4 +1,4 @@
-package osu_parser
+package pcircle
 
 import (
 	"fmt"

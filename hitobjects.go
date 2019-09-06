@@ -1,4 +1,4 @@
-package osu_parser
+package pcircle
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// types for objects
+// Bitmap for BaseHitObject.Type
 const (
 	CIRCLE = 1 << iota
 	SLIDER
@@ -28,10 +28,13 @@ type BaseHitObject struct {
 }
 
 // Circle is a single hit in all osu! game modes.
+// Example:
+//  164,260,2434,1,0,0:0:0:0:
 type Circle struct {
 	BaseHitObject
 }
 
+// String returns string of Circle as it would be in .osu file
 func (c Circle) String() string {
 	return strings.Join([]string{
 		strconv.Itoa(c.X),
@@ -79,6 +82,8 @@ func (c *Circle) FromString(str string) (err error) {
 
 // Slider also creates droplets in Catch the Beat, yellow drumrolls in Taiko,
 // and does not appear in osu!mania.
+// Example:
+//  424,96,66,2,0,B|380:120|332:96|332:96|304:124,1,130,2|0,0:0|0:0,0:0:0:0:
 type Slider struct {
 	BaseHitObject
 
@@ -113,6 +118,7 @@ type Slider struct {
 	EdgeAdditions []*SliderEdgeAddition
 }
 
+// String returns string of Slider as it would be in .osu file
 func (s Slider) String() string {
 	hitSounds := make([]string, len(s.EdgeHitSounds))
 	for i := range hitSounds {
@@ -215,6 +221,7 @@ type SliderEdgeAddition struct {
 	AdditionSet SampleSet
 }
 
+// String returns string of SliderEdgeAddition as it would be in .osu file
 func (sea SliderEdgeAddition) String() string {
 	return strconv.Itoa(int(sea.SampleSet)) + ":" + strconv.Itoa(int(sea.AdditionSet))
 }
@@ -244,6 +251,7 @@ type SliderPath struct {
 	CurvePoints []*SliderCurvePoint
 }
 
+// String returns string of SliderPath as it would be in .osu file
 func (sp SliderPath) String() string {
 	points := make([]string, len(sp.CurvePoints))
 	for i := range points {
@@ -273,6 +281,7 @@ type SliderCurvePoint struct {
 	X, Y int
 }
 
+// String returns string of SliderCurvePoint as it would be in .osu file
 func (cp SliderCurvePoint) String() string {
 	return strconv.Itoa(cp.X) + ":" + strconv.Itoa(cp.Y)
 }
@@ -291,11 +300,14 @@ func (cp *SliderCurvePoint) FromString(str string) (err error) {
 
 // Spinner also creates bananas in Catch the Beat, a spinner in osu!taiko,
 // and does not appear in osu!mania. Hit sounds play at the end of the spinner.
+// Example:
+//  256,192,730,12,8,3983
 type Spinner struct {
 	BaseHitObject
 	EndTime int // When the spinner will end, in milliseconds from the beginning of the song
 }
 
+// String returns string of Spinner as it would be in .osu file
 func (s Spinner) String() string {
 	if s.Extras == nil {
 		return strings.Join([]string{
@@ -362,11 +374,14 @@ func (s *Spinner) FromString(str string) (err error) {
 }
 
 // ManiaHoldNote is a hold note unique to osu!mania.
+// Example:
+//  329,192,16504,128,0,16620:0:0:0:0:
 type ManiaHoldNote struct {
 	BaseHitObject
 	EndTime int
 }
 
+// String returns string of ManiaHoldNote as it would be in .osu file
 func (hn ManiaHoldNote) String() string {
 	return strings.Join([]string{
 		strconv.Itoa(hn.X),
