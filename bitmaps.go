@@ -15,6 +15,14 @@ const (
 	DOUBLE_COUNTDOWN
 )
 
+// All possible gamemodes
+const (
+	OSU_GAMEMODE = iota
+	TAIKO_GAMEMODE
+	CTB_GAMEMODE
+	MANIA_GAMEMODE
+)
+
 // SampleSet specifies which set of hit sounds will be used.
 type SampleSet int
 
@@ -52,17 +60,6 @@ func (ss SampleSet) String() string {
 		DRUM_SAMPLESET:   "Drum",
 	}[ss]
 }
-
-// GameMode defines the game mode of the beatmap.
-type GameMode int
-
-// All possible gamemodes
-const (
-	OSU_GAMEMODE GameMode = iota
-	TAIKO_GAMEMODE
-	CTB_GAMEMODE
-	MANIA_GAMEMODE
-)
 
 // HitSound specifies a hit sounds to play when the hit object is successfully hit.
 type HitSound int
