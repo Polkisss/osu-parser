@@ -5,6 +5,39 @@ import (
 	"strings"
 )
 
+// Background specifies parameters of beatmap background.
+// Example of an Background:
+//  0,0,"bg.jpg",0,0
+type Background struct {
+	FileName         string
+	XOffset, YOffset int
+}
+
+// String returns string of Background as it would be in .osu file
+func (b Background) String() string {
+	return "0,0," + strings.Join(
+		[]string{
+			b.FileName,
+			strconv.Itoa(b.XOffset),
+			strconv.Itoa(b.YOffset),
+		}, ",")
+}
+
+// FromString fills Background fields with data parsed from string.
+func (b *Background) FromString(str string) (err error) {
+	attrs := strings.Split(strings.TrimLeft(str, "0,0,"), ",")
+
+	b.FileName = attrs[0]
+
+	b.XOffset, err = strconv.Atoi(attrs[1])
+	if err != nil {
+		return err
+	}
+
+	b.YOffset, err = strconv.Atoi(attrs[2])
+	return err
+}
+
 // Break defines a single break period.
 // Example of an break period:
 //  2,4627,5743
