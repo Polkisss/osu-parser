@@ -17,7 +17,7 @@ type Background struct {
 func (b Background) String() string {
 	return "0,0," + strings.Join(
 		[]string{
-			b.FileName,
+			`"` + b.FileName + `"`,
 			strconv.Itoa(b.XOffset),
 			strconv.Itoa(b.YOffset),
 		}, ",")
@@ -27,7 +27,7 @@ func (b Background) String() string {
 func (b *Background) FromString(str string) (err error) {
 	attrs := strings.Split(strings.TrimLeft(str, "0,0,"), ",")
 
-	b.FileName = attrs[0]
+	b.FileName = strings.TrimRight(strings.TrimLeft(attrs[0], `"`), `"`)
 
 	b.XOffset, err = strconv.Atoi(attrs[1])
 	if err != nil {
