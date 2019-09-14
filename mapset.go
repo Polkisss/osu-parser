@@ -3,15 +3,14 @@ package pcircle
 import (
 	"archive/zip"
 	"bytes"
+	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 )
 
-func NewMapset(directory string) *Mapset {
-	return &Mapset{
-		DirectoryPath: directory,
-	}
+func NewMapset() *Mapset {
+	return new(Mapset)
 }
 
 // Mapset stores information about beatmaps, its location and other.
@@ -23,13 +22,35 @@ type Mapset struct {
 }
 
 // FromDirectory scans provided (from structure) directory and loads .osu files into Mapset.
-// Not implemented yet.
-func (m *Mapset) FromDirectory() (err error) {
-	beatmaps, err := filepath.Glob(filepath.Join(m.DirectoryPath, "*.osu"))
+func (m *Mapset) FromDirectory(path string) (err error) {
+	fi, err := os.Stat(path)
 	if err != nil {
 		return err
 	}
-	_ = beatmaps
+	if !fi.IsDir() {
+		return errors.New("invalid directory: " + path)
+	}
+
+	m.DirectoryPath = path
+
+	bfiles, err := filepath.Glob(filepath.Join(path, "*.osu"))
+	if err != nil {
+		return err
+	}
+
+	m.Beatmaps = make([]*Beatmap, len(bfiles))
+	for i, bfile := range bfiles {
+		beatmap := NewBeatmap()
+		err := beatmap.FromFile(bfile)
+		if err != nil {
+			return err
+		}
+		m.Beatmaps[i] = beatmap
+	}
+
+	if len(m.Beatmaps) > 0 {
+		m.BeatmapSetID = m.Beatmaps[0].BeatmapSetID
+	}
 
 	return nil
 }
