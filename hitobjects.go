@@ -365,7 +365,6 @@ func (s *Spinner) FromString(str string) (err error) {
 		return err
 	}
 
-	fmt.Println(attrs, len(attrs))
 	if len(attrs) > 6 {
 		s.Extras = new(Extras)
 		return s.Extras.FromString(attrs[6])
