@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -99,6 +100,61 @@ type Beatmap struct {
 	//
 	// A list of the beatmap's hit objects.
 	HitObjects []interface{}
+}
+
+func (b *Beatmap) SortTimingPoints() {
+	sort.Slice(b.TimingPoints, func(i, j int) bool {
+		return b.TimingPoints[i].Offset < b.TimingPoints[j].Offset
+	})
+}
+func (b *Beatmap) SortHitObjects() {
+	sort.Slice(b.HitObjects, func(i, j int) bool {
+		return b.HitObjects[i].(BaseHitObject).Time < b.HitObjects[j].(BaseHitObject).Time
+	})
+}
+
+func (b *Beatmap) ToFile(path string) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	w := bufio.NewWriter(f)
+
+	b.SortTimingPoints()
+	b.SortHitObjects()
+
+	_, err = w.WriteString("osu file format v14\n")
+	if err != nil {
+		return err
+	}
+
+	for _, line := range []string{
+		"[General]",
+		generateLineFor("AudioFilename", b.AudioFilename),
+		generateLineFor("AudioLeadIn", b.AudioLeadIn),
+		generateLineFor("PreviewTime", b.PreviewTime),
+		generateLineFor("Countdown", b.Countdown),
+		generateLineFor("SampleSet", b.SampleSet),
+		generateLineFor("StackLeniency", b.StackLeniency),
+		generateLineFor("Mode", b.GameMode),
+		generateLineFor("LetterboxInBreaks", b.LetterboxInBreaks),
+		generateLineFor("StoryFireInFront", b.StoryFireInFront),
+		generateLineFor("SkinPreference", b.SkinPreference),
+		generateLineFor("EpilepsyWarning", b.EpilepsyWarning),
+		generateLineFor("CountdownOffset", b.CountdownOffset),
+		generateLineFor("WidescreenStoryboard", b.WidescreenStoryboard),
+		generateLineFor("SpecialStyle", b.SpecialStyle),
+		generateLineFor("UseSkinSprites", b.UseSkinSprites),
+	} {
+		_, err = w.WriteString(line + "\n")
+		if err != nil {
+			return err
+		}
+	}
+
+	return w.Flush()
 }
 
 // FromFile parses specified file and fills Beatmap with data.
@@ -401,7 +457,7 @@ func (b *Beatmap) FromFile(path string) error {
 					return err
 				}
 				b.HitObjects = append(b.HitObjects, hitObject)
-				
+
 			} else if (SPINNER & objectType) > 0 {
 				hitObject := &Spinner{}
 				err = hitObject.FromString(line)
@@ -409,7 +465,7 @@ func (b *Beatmap) FromFile(path string) error {
 					return err
 				}
 				b.HitObjects = append(b.HitObjects, hitObject)
-				
+
 			} else if (MANIA_HOLD_NOTE & objectType) > 0 {
 				hitObject := &ManiaHoldNote{}
 				err = hitObject.FromString(line)

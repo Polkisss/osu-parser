@@ -2,6 +2,7 @@ package pcircle
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -33,4 +34,11 @@ func string2int2bool(s string) (b bool, err error) {
 func tokenize(str string) (head, data string) {
 	sep := strings.IndexRune(str, ':')
 	return strings.TrimSpace(str[:sep]), strings.TrimSpace(str[sep+1:])
+}
+
+func generateLineFor(head string, data interface{}) string {
+	if ndata, ok := data.(fmt.Stringer); ok {
+		return head + ": " + ndata.String()
+	}
+	return fmt.Sprintf("%v: %v", head, data)
 }
