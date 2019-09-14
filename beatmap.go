@@ -109,6 +109,8 @@ func (b *Beatmap) FromFile(path string) error {
 	}
 	defer f.Close()
 
+	b.FilePath = path
+
 	scanner := bufio.NewScanner(f)
 	var section string
 
@@ -119,8 +121,8 @@ func (b *Beatmap) FromFile(path string) error {
 			continue
 		}
 
-		if b.FileFormatVersion != 0 && strings.HasPrefix(line, "osu file format v") {
-			b.FileFormatVersion, err = strconv.Atoi(line)
+		if b.FileFormatVersion == 0 && strings.HasPrefix(line, "osu file format v") {
+			b.FileFormatVersion, err = strconv.Atoi(line[17:])
 			if err != nil {
 				return err
 			}
@@ -379,8 +381,6 @@ func (b *Beatmap) FromFile(path string) error {
 			}
 
 		case "HitObjects":
-			var hitObject interface{}
-
 			objectType, err := strconv.Atoi(strings.Split(line, ",")[3])
 			if err != nil {
 				return err
@@ -392,31 +392,34 @@ func (b *Beatmap) FromFile(path string) error {
 				if err != nil {
 					return err
 				}
+				b.HitObjects = append(b.HitObjects, hitObject)
 
-			} else if (SLIDER & objectType) == 1 {
+			} else if (SLIDER & objectType) > 0 {
 				hitObject := &Slider{}
 				err = hitObject.FromString(line)
 				if err != nil {
 					return err
 				}
-			} else if (SPINNER & objectType) == 1 {
+				b.HitObjects = append(b.HitObjects, hitObject)
+				
+			} else if (SPINNER & objectType) > 0 {
 				hitObject := &Spinner{}
 				err = hitObject.FromString(line)
 				if err != nil {
 					return err
 				}
-			} else if (MANIA_HOLD_NOTE & objectType) == 1 {
+				b.HitObjects = append(b.HitObjects, hitObject)
+				
+			} else if (MANIA_HOLD_NOTE & objectType) > 0 {
 				hitObject := &ManiaHoldNote{}
 				err = hitObject.FromString(line)
 				if err != nil {
 					return err
 				}
+				b.HitObjects = append(b.HitObjects, hitObject)
 			}
-
-			b.HitObjects = append(b.HitObjects, hitObject)
-
 		default:
-			return errors.New("invalid section in beatmap file: " + section)
+			return errors.New("invalid section in beatmap file: '" + section + "'")
 		}
 	}
 
