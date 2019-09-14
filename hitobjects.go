@@ -190,6 +190,9 @@ func (s *Slider) FromString(str string) (err error) {
 		return err
 	}
 
+    if len(attrs) <= 8 {
+        return nil
+    }
 	edgeHitSounds := strings.Split(attrs[8], "|")
 	s.EdgeHitSounds = make([]HitSound, len(edgeHitSounds))
 	for i := 0; i < len(edgeHitSounds); i++ {
